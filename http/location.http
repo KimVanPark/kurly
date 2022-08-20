@@ -1,0 +1,12 @@
+### Location 생성
+POST http://localhost:8080/api/v1/locations
+Content-Type: application/json
+
+{
+  "code": "A01-01-101"
+}
+
+
+### Location 조회
+
+GET http://localhost:8080/api/v1/locations/1
