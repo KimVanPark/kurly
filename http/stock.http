@@ -1,0 +1,9 @@
+### 입고
+POST http://localhost:8080/api/v1/stocks/receive
+Content-Type: application/json
+
+{
+  "locationId": 1,
+  "skuId": 1,
+  "quantity": 100
+}
