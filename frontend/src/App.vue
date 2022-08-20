@@ -1,7 +1,20 @@
 <template>
   <v-app>
-    <v-app-bar app color="#eeeeee" v-if="isNotLogin">
-      {{ title }}
+    <v-app-bar app color="#92A2EA" v-if="isNotLogin">
+      <v-row>
+        <v-col>
+          <span class="title">
+           {{ title }}
+          </span>
+        </v-col>
+      </v-row>
+      <v-switch
+          class="switch-button"
+          v-model="active"
+          color="success"
+          hide-details
+          v-if="isHighWorker"
+      ></v-switch>
     </v-app-bar>
     <v-main>
       <router-view/>
@@ -10,8 +23,20 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+import {WORKER_STATUS} from "@/constant";
+
 export default {
+  data() {
+    return {
+      active: false
+    }
+  },
   computed: {
+    ...mapGetters(['getWorker']),
+    isHighWorker() {
+      return this.getWorker.level === WORKER_STATUS.HIGH
+    },
     title() {
       return this.$route.name;
     },
@@ -43,5 +68,16 @@ nav {
       color: #42b983;
     }
   }
+}
+
+.title {
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.switch-button {
+  position: absolute;
+  left: 80%;
 }
 </style>
