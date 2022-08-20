@@ -1,0 +1,25 @@
+### SKU 생성
+POST http://localhost:8080/api/v1/skus
+Content-Type: application/json
+
+{
+  "name": "사과",
+  "code": "사과001",
+  "barcode": "사과바코드"
+}
+
+
+### SKU 조회
+
+GET http://localhost:8080/api/v1/skus/1
+
+
+
+### SKU 업데이트
+
+PUT http://localhost:8080/api/v1/skus/1
+Content-Type: application/json
+
+{
+  "status": "SALE"
+}
