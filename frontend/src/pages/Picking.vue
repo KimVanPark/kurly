@@ -25,6 +25,7 @@
 
 <script>
 import api from "@/api";
+import {mapGetters} from "vuex";
 
 export default {
   name: "Picking",
@@ -32,6 +33,9 @@ export default {
     return {
       uuid: "hi"
     }
+  },
+  computed: {
+    ...mapGetters(['getWorker'])
   },
   methods: {
     async onClickButton() {
@@ -45,6 +49,9 @@ export default {
         console.error("error!!")
       }
     }
+  },
+  mounted() {
+    console.log("worker is",this.getWorker)
   }
 }
 </script>
