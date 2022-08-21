@@ -48,4 +48,8 @@ public class Sku {
     public void update(SkuStatus status) {
         this.status = status;
     }
+
+    public boolean isSameBarcode(String barcode) {
+        return this.barcode.equals(barcode);
+    }
 }

@@ -38,11 +38,11 @@ class PickingService(
     }
 
     private fun checkPickingInput(pickingOrderItem: PickingOrderItem, request: PickingRequest) {
-        if (pickingOrderItem.location.getCode() != request.locationCode) {
+        if (pickingOrderItem.location.isSameCode(request.locationCode).not()) {
             throw IllegalArgumentException("피킹 위치가 올바르지 않습니다.")
         }
 
-        if (pickingOrderItem.sku.getBarcode() != request.skuBarcode) {
+        if (pickingOrderItem.sku.isSameBarcode(request.skuBarcode).not()) {
             throw IllegalArgumentException("바코드가 올바르지 않습니다.")
         }
 
