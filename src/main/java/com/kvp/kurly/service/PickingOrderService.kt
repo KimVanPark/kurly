@@ -8,6 +8,7 @@ import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.SkuRepository
 import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,6 +40,10 @@ class PickingOrderService(
 
         return pickingOrder
     }
+
+    fun getPickingOrder(pickingOrderId: Long): PickingOrder =
+        pickingOrderRepository.findByIdOrNull(pickingOrderId)
+            ?: throw IllegalArgumentException("Picking Order(ID: $pickingOrderId)를 찾을 수 없습니다.")
 
     @Transactional
     fun assign(request: PickingOrderAssignRequest): PickingOrder {

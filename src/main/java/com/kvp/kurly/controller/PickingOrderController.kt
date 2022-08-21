@@ -2,11 +2,14 @@ package com.kvp.kurly.controller
 
 import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
+import com.kvp.kurly.dto.PickingOrderItemWithCountResponse
 import com.kvp.kurly.dto.PickingOrderResponse
+import com.kvp.kurly.dto.PickingOrderWithCountResponse
 import com.kvp.kurly.dto.PickingRequest
 import com.kvp.kurly.dto.PickingResponse
 import com.kvp.kurly.service.PickingOrderService
 import com.kvp.kurly.service.PickingService
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -24,9 +27,14 @@ class PickingOrderController(
     fun create(@RequestBody request: PickingOrderCreateRequest): PickingOrderResponse =
         PickingOrderResponse.from(pickingOrderService.create(request))
 
+    @GetMapping("/{pickingOrderId}")
+    fun getPickingOrder(@PathVariable pickingOrderId: Long): PickingOrderWithCountResponse =
+        PickingOrderWithCountResponse.from(pickingOrderService.getPickingOrder(pickingOrderId))
+
+
     @PostMapping("/assignment")
-    fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderResponse =
-        PickingOrderResponse.from(pickingOrderService.assign(request))
+    fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderWithCountResponse =
+        PickingOrderWithCountResponse.from(pickingOrderService.assign(request))
 
 
     @PostMapping("/{pickingOrderId}/items/{pickingOrderItemId}/picking")
@@ -34,6 +42,6 @@ class PickingOrderController(
         @PathVariable pickingOrderId: Long,
         @PathVariable pickingOrderItemId: Long,
         @RequestBody request: PickingRequest,
-    ): PickingResponse =
-        PickingResponse.from(pickingService.picking(pickingOrderItemId, request))
+    ): PickingOrderItemWithCountResponse =
+        PickingOrderItemWithCountResponse.from(pickingService.picking(pickingOrderItemId, request))
 }
