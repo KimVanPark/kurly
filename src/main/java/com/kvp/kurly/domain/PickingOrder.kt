@@ -15,7 +15,7 @@ class PickingOrder(
     @Column(name = "picking_order_id", nullable = false)
     val id: Long = 0L,
 
-//    val worker: Worker?,
+    var workerId: Long? = null, // FIXME
 
     @OneToMany(mappedBy = "pickingOrder")
     val items: MutableList<PickingOrderItem> = mutableListOf()
@@ -23,5 +23,9 @@ class PickingOrder(
 
     fun addPickingOrderItem(item: PickingOrderItem) {
         items.add(item)
+    }
+
+    fun assign(workerId: Long) {
+        this.workerId = workerId
     }
 }

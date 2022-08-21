@@ -1,5 +1,6 @@
 package com.kvp.kurly.controller
 
+import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
 import com.kvp.kurly.dto.PickingOrderResponse
 import com.kvp.kurly.dto.PickingRequest
@@ -22,6 +23,10 @@ class PickingOrderController(
     @PostMapping
     fun create(@RequestBody request: PickingOrderCreateRequest): PickingOrderResponse =
         PickingOrderResponse.from(pickingOrderService.create(request))
+
+    @PostMapping("/assignment")
+    fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderResponse =
+        PickingOrderResponse.from(pickingOrderService.assign(request))
 
 
     @PostMapping("/{pickingOrderId}/items/{pickingOrderItemId}/picking")

@@ -6,6 +6,7 @@ import com.kvp.kurly.domain.PickingOrderItem
 import com.kvp.kurly.domain.PickingOrderItemRepository
 import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.SkuRepository
+import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,6 +37,16 @@ class PickingOrderService(
         }
         pickingOrderItemRepository.saveAll(items)
 
+        return pickingOrder
+    }
+
+    @Transactional
+    fun assign(request: PickingOrderAssignRequest): PickingOrder {
+        val pickingOrder = pickingOrderRepository.findFirstByWorkerIdIsNullOrderById()
+            ?: throw IllegalStateException("작업자가 할당되지 않은 요청서가 없습니다.")
+
+
+        pickingOrder.assign(0) // FIXME Worker 찾아서 Id 넣기
         return pickingOrder
     }
 }
