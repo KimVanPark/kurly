@@ -7,9 +7,10 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 
 @Entity
-final class PickingOrderItem(
+class PickingOrderItem(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +30,16 @@ final class PickingOrderItem(
     val sku: Sku,
 
     val count: Int,
+
+    @OneToMany(mappedBy = "pickingOrderItem")
+    val pickingHistories: MutableList<Picking> = mutableListOf()
 ) {
 
     init {
         pickingOrder.addPickingOrderItem(this)
+    }
+
+    fun addPicking(picking: Picking) {
+        pickingHistories.add(picking)
     }
 }
