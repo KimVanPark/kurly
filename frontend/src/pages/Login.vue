@@ -14,12 +14,12 @@
         </v-row>
         <v-row>
           <v-col class="pb-0">
-              <v-text-field
-                  ref="workerInput"
-                  v-model="worker"
-                  solo
-                  label="작업자 입력"
-              ></v-text-field>
+            <v-text-field
+                ref="workerInput"
+                v-model="worker"
+                solo
+                label="작업자 입력"
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-row>
@@ -34,36 +34,62 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-snackbar
+        v-model="loginError.snackbar"
+        timeout="1000"
+        color="red accent-2"
+    >
+      {{ loginError.text }}
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
-
 import {mapGetters} from "vuex";
+import API from "@/api/worker";
 
 export default {
   name: "Login",
   data() {
     return {
-      worker: ""
+      worker: "",
+      loginError: {
+        snackbar: false,
+        text: '로그인에 실패하였습니다. 작업자를 확인해주세요.'
+      }
     }
   },
   computed: {
     ...mapGetters(['getWorker'])
   },
   methods: {
-    onClickButton() {
-      console.log("start picking!", this.worker);
-      this.$router.push("picking")
+    async onClickButton() {
+      if (!this.worker) {
+        this.loginError.text = '작업자를 입력해주세요'
+        this.loginError.snackbar = true
+        return;
+      }
+      const params = {
+        worker: this.worker
+      }
+      try {
+        const data = await API.fetchHigh(params);
+        this.$store.commit("setWorker", {
+          id: data.workerId,
+          name: data.name,
+          level: data.level
+        })
+      } catch (e) {
+        this.loginError.text = '로그인에 실패하였습니다. 작업자를 확인해주세요.'
+        this.loginError.snackbar = true
+        return;
+      }
+
+      await this.$router.push("picking")
     }
   },
   mounted() {
     this.$refs.workerInput.focus();
-    console.log("before worker is", this.getWorker);
-    this.$store.commit("setWorker",{
-      name: 'sunho',
-      level: 'high'
-    })
   }
 }
 </script>
@@ -73,6 +99,7 @@ export default {
   font-size: 16px;
   font-weight: bold;
 }
+
 .kvp-banner {
   position: absolute;
   top: 10px;
