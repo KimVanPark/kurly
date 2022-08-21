@@ -22,12 +22,7 @@ class PickingService(
         val pickingOrderItem = pickingOrderItemRepository.findByIdOrNull(pickingOrderItemId)
             ?: throw IllegalArgumentException("Picking Order Item(ID: ${request.toteCode})를 찾을 수 없습니다.")
 
-        val pickedCount = pickingOrderItem.pickingHistories.fold(0) { sum: Int, current: Picking -> sum + current.count }
-        val remainCount = pickingOrderItem.count - pickedCount
-
-        if (remainCount < request.count) {
-            throw IllegalArgumentException("피킹 수량이 올바르지 않습니다.")
-        }
+        checkPickingInput(pickingOrderItem, request)
 
         pickingRepository.save(
             Picking(
@@ -40,5 +35,26 @@ class PickingService(
         )
 
         return pickingOrderItem
+    }
+
+    private fun checkPickingInput(pickingOrderItem: PickingOrderItem, request: PickingRequest) {
+        if (pickingOrderItem.location.getCode() != request.locationCode) {
+            throw IllegalArgumentException("피킹 위치가 올바르지 않습니다.")
+        }
+
+        if (pickingOrderItem.sku.getBarcode() != request.skuBarcode) {
+            throw IllegalArgumentException("바코드가 올바르지 않습니다.")
+        }
+
+        checkPickingCount(pickingOrderItem, request.count)
+    }
+    
+    private fun checkPickingCount(pickingOrderItem: PickingOrderItem, pickingCount: Int) {
+        val pickedCount = pickingOrderItem.pickingHistories.fold(0) { sum: Int, current: Picking -> sum + current.count }
+        val remainCount = pickingOrderItem.count - pickedCount
+
+        if (remainCount < pickingCount) {
+            throw IllegalArgumentException("피킹 수량이 올바르지 않습니다.")
+        }
     }
 }
