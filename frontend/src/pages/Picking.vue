@@ -122,7 +122,7 @@
                 v-model="postData.pickingQuantity"
                 solo
                 :background-color="pickingQuantityColor"
-                :disabled="!isHighWorker"
+                :readonly="!isHighWorker"
                 dense
             ></v-text-field>
           </v-col>
@@ -180,6 +180,43 @@
         </v-card>
       </v-dialog>
     </v-row>
+    <v-row justify="center">
+      <v-dialog
+          v-model="confirmDialog"
+          persistent
+          max-width="290"
+      >
+        <v-card>
+          <v-card-title class="text-h5">
+            피킹 확인
+          </v-card-title>
+          <v-card-text>
+            <span class="font-weight-bold black--text">{{ postData.location }}</span>에서
+            <span class="font-weight-bold black--text">{{ postData.tote }}</span>에
+            <span class="font-weight-bold black--text">{{ currentItem.skuName }}</span>을
+            <span class="font-weight-bold black--text">{{ postData.pickingQuantity }}</span>개
+            피킹하시겠습니까?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="red darken-1"
+                text
+                @click="confirmDialog = false"
+            >
+              Disagree
+            </v-btn>
+            <v-btn
+                color="#92A2EA"
+                text
+                @click="doCloseConfirm"
+            >
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </v-container>
 </template>
 
@@ -190,6 +227,12 @@ import {WORKER_STATUS} from "@/constant";
 
 export default {
   name: "Picking",
+  props: {
+    active: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       uuid: "hi",
@@ -215,7 +258,8 @@ export default {
         enable: false,
         text: '로그인에 실패하였습니다. 작업자를 확인해주세요.'
       },
-      dialog: false
+      dialog: false,
+      confirmDialog: false
     }
   },
   computed: {
@@ -250,7 +294,6 @@ export default {
     }
   },
   methods: {
-
     selectLocation() {
       this.$refs.locationInput.$el.getElementsByTagName('input')[0].select()
     },
@@ -288,6 +331,14 @@ export default {
         this.selectBarcode()
         return;
       }
+
+      if (this.isHighWorker && this.active) {
+        this.$nextTick(() => {
+          this.selectPickingQuantity()
+        })
+        return;
+      }
+
       this.postData.pickingQuantity++;
       this.selectBarcode()
     },
@@ -317,7 +368,19 @@ export default {
         return;
       }
 
+      if (this.isHighWorker) {
+        await this.postPicking()
+        return;
+      }
+      this.confirmDialog = true
+    },
+    async doCloseConfirm() {
+      this.confirmDialog = false
+      await this.postPicking()
+    },
+    async postPicking() {
       const data = {
+        workerId: this.getWorker.id,
         pickingItemId: this.currentItem.itemId,
         pickingQuantity: this.postData.pickingQuantity,
         tote: this.postData.tote
@@ -347,7 +410,12 @@ export default {
       this.resetNewItem()
     },
     resetSameItem() {
-      //TODO 작업자숙련도에 따라서 다르게
+      if (this.isHighWorker) {
+        this.postData.pickingQuantity = null
+        this.postData.tote = ''
+        this.selectBarcode()
+        return
+      }
       this.postData.location = ''
       this.postData.barcode = ''
       this.postData.pickingQuantity = null

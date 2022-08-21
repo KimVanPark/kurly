@@ -17,7 +17,7 @@
       ></v-switch>
     </v-app-bar>
     <v-main>
-      <router-view/>
+      <router-view :active="active"/>
     </v-main>
   </v-app>
 </template>
