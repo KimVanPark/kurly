@@ -1,0 +1,7 @@
+### WORKER 생성
+POST http://localhost:8080/api/v1/workers
+Content-Type: application/json
+
+{
+  "name": "작업자"
+}
