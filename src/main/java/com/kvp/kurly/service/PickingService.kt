@@ -1,10 +1,14 @@
 package com.kvp.kurly.service
 
 import com.kvp.kurly.domain.Picking
+import com.kvp.kurly.domain.PickingOrder
 import com.kvp.kurly.domain.PickingOrderItem
 import com.kvp.kurly.domain.PickingOrderItemRepository
+import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.PickingRepository
 import com.kvp.kurly.domain.ToteRepository
+import com.kvp.kurly.domain.Worker
+import com.kvp.kurly.domain.WorkerRepository
 import com.kvp.kurly.dto.PickingRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -14,19 +18,24 @@ import org.springframework.transaction.annotation.Transactional
 class PickingService(
     private val pickingRepository: PickingRepository,
     private val toteRepository: ToteRepository,
+    private val pickingOrderRepository: PickingOrderRepository,
     private val pickingOrderItemRepository: PickingOrderItemRepository,
+    private val workerService: WorkerService,
 ) {
 
     @Transactional
-    fun picking(pickingOrderItemId: Long, request: PickingRequest): PickingOrderItem {
+    fun picking(pickingOrderId: Long, pickingOrderItemId: Long, request: PickingRequest): PickingOrderItem {
+        val pickingOrder = pickingOrderRepository.findByIdOrNull(pickingOrderId)
+            ?: throw IllegalArgumentException("Picking Order (ID: $pickingOrderId)를 찾을 수 없습니다.")
         val pickingOrderItem = pickingOrderItemRepository.findByIdOrNull(pickingOrderItemId)
-            ?: throw IllegalArgumentException("Picking Order Item(ID: ${request.toteCode})를 찾을 수 없습니다.")
+            ?: throw IllegalArgumentException("Picking Order Item(ID: $pickingOrderItemId)를 찾을 수 없습니다.")
+        val worker = workerService.find(request.workerId)
 
-        checkPickingInput(pickingOrderItem, request)
+        checkPickingInput(pickingOrder, pickingOrderItem, worker, request)
 
         pickingRepository.save(
             Picking(
-                workerId = 0L, // FIXME
+                worker = worker,
                 tote = toteRepository.findByCode(request.toteCode)
                     ?: throw IllegalArgumentException("Tote Code(${request.toteCode})를 찾을 수 없습니다."),
                 pickingOrderItem = pickingOrderItem,
@@ -37,7 +46,20 @@ class PickingService(
         return pickingOrderItem
     }
 
-    private fun checkPickingInput(pickingOrderItem: PickingOrderItem, request: PickingRequest) {
+    private fun checkPickingInput(
+        pickingOrder: PickingOrder,
+        pickingOrderItem: PickingOrderItem,
+        worker: Worker,
+        request: PickingRequest
+    ) {
+        if (pickingOrderItem.pickingOrder != pickingOrder) {
+            throw IllegalArgumentException("피킹 주문서(ID: ${pickingOrder.id})의 피킹 주문 아이템이 아닙니다.")
+        }
+
+        if (pickingOrder.worker != worker) {
+            throw IllegalArgumentException("피킹 주문서의 작업자와 요청 작업자가 다릅니다.")
+        }
+
         if (pickingOrderItem.location.isSameCode(request.locationCode).not()) {
             throw IllegalArgumentException("피킹 위치가 올바르지 않습니다.")
         }

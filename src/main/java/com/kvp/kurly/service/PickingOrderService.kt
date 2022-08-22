@@ -6,6 +6,7 @@ import com.kvp.kurly.domain.PickingOrderItem
 import com.kvp.kurly.domain.PickingOrderItemRepository
 import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.SkuRepository
+import com.kvp.kurly.domain.WorkerRepository
 import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
 import com.kvp.kurly.dto.PickingOrderItemWithCountResponse
@@ -20,6 +21,7 @@ class PickingOrderService(
     private val pickingOrderItemRepository: PickingOrderItemRepository,
     private val skuRepository: SkuRepository,
     private val locationRepository: LocationRepository,
+    private val workerService: WorkerService,
 ) {
 
     @Transactional
@@ -58,12 +60,16 @@ class PickingOrderService(
     }
 
     @Transactional
-    fun assign(request: PickingOrderAssignRequest): PickingOrder {
+    fun assign(request: PickingOrderAssignRequest): PickingOrderWithCountResponse {
         val pickingOrder = pickingOrderRepository.findFirstByWorkerIdIsNullOrderById()
             ?: throw IllegalStateException("작업자가 할당되지 않은 요청서가 없습니다.")
 
+        val worker = workerService.find(request.workerId)
+        pickingOrder.assign(worker)
 
-        pickingOrder.assign(0) // FIXME Worker 찾아서 Id 넣기
-        return pickingOrder
+        return PickingOrderWithCountResponse(
+            id = pickingOrder.id,
+            items = pickingOrder.items.map { PickingOrderItemWithCountResponse.from(it) }
+        )
     }
 }

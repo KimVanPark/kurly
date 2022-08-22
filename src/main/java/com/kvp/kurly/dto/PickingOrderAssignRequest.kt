@@ -1,5 +1,5 @@
 package com.kvp.kurly.dto
 
 data class PickingOrderAssignRequest(
-    val workerName: String,
+    val workerId: Long,
 )

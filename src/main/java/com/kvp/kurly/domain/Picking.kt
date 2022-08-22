@@ -18,7 +18,9 @@ class Picking(
     @Column(name = "picking_id", nullable = false)
     val id: Long = 0L,
 
-    val workerId: Long,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worker_id")
+    val worker: Worker,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tote_id")

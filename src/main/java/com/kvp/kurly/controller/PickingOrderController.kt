@@ -34,7 +34,7 @@ class PickingOrderController(
 
     @PostMapping("/assignment")
     fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderWithCountResponse =
-        PickingOrderWithCountResponse.from(pickingOrderService.assign(request))
+        pickingOrderService.assign(request)
 
 
     @PostMapping("/{pickingOrderId}/items/{pickingOrderItemId}/picking")
@@ -43,5 +43,5 @@ class PickingOrderController(
         @PathVariable pickingOrderItemId: Long,
         @RequestBody request: PickingRequest,
     ): PickingOrderItemWithCountResponse =
-        PickingOrderItemWithCountResponse.from(pickingService.picking(pickingOrderItemId, request))
+        PickingOrderItemWithCountResponse.from(pickingService.picking(pickingOrderId, pickingOrderItemId, request))
 }
