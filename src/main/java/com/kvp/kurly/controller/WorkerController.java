@@ -24,4 +24,9 @@ public class WorkerController {
     public WorkerResponse findById(@PathVariable Long workerId) {
         return WorkerResponse.from(workerService.find(workerId));
     }
+
+    @GetMapping
+    public WorkerResponse findByName(String name) {
+        return WorkerResponse.from(workerService.findByName(name));
+    }
 }
