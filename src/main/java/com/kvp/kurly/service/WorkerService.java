@@ -16,6 +16,9 @@ public class WorkerService {
     }
 
     public Worker create(String name) {
+        if (workerRepository.existsByName(name)) {
+            throw new IllegalArgumentException(String.format("Worker 이름(%s)이 이미 존재합니다.", name));
+        }
         return workerRepository.save(Worker.of(name));
     }
 
