@@ -70,12 +70,12 @@ export default {
         return;
       }
       const params = {
-        worker: this.worker
+        name: this.worker
       }
       try {
-        const data = await API.fetchHigh(params);
+        const data = await API.fetchWorker(params);
         this.$store.commit("setWorker", {
-          id: data.workerId,
+          id: data.id,
           name: data.name,
           level: data.level
         })
