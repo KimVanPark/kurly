@@ -6,6 +6,7 @@ import com.kvp.kurly.domain.PickingOrderItem
 import com.kvp.kurly.domain.PickingOrderItemRepository
 import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.SkuRepository
+import com.kvp.kurly.domain.Worker
 import com.kvp.kurly.domain.WorkerRepository
 import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
@@ -60,11 +61,10 @@ class PickingOrderService(
     }
 
     @Transactional
-    fun assign(request: PickingOrderAssignRequest): PickingOrderWithCountResponse {
+    fun assign(worker: Worker, request: PickingOrderAssignRequest): PickingOrderWithCountResponse {
         val pickingOrder = pickingOrderRepository.findFirstByWorkerIdIsNullOrderById()
             ?: throw IllegalStateException("작업자가 할당되지 않은 요청서가 없습니다.")
 
-        val worker = workerService.find(request.workerId)
         pickingOrder.assign(worker)
 
         return PickingOrderWithCountResponse(

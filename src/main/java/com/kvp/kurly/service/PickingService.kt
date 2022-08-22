@@ -8,7 +8,6 @@ import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.PickingRepository
 import com.kvp.kurly.domain.ToteRepository
 import com.kvp.kurly.domain.Worker
-import com.kvp.kurly.domain.WorkerRepository
 import com.kvp.kurly.dto.PickingRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

@@ -9,6 +9,8 @@ import com.kvp.kurly.dto.PickingRequest
 import com.kvp.kurly.dto.PickingResponse
 import com.kvp.kurly.service.PickingOrderService
 import com.kvp.kurly.service.PickingService
+import com.kvp.kurly.service.PointService
+import com.kvp.kurly.service.WorkerService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController
 class PickingOrderController(
     private val pickingOrderService: PickingOrderService,
     private val pickingService: PickingService,
+    private val workerService: WorkerService,
+    private val pointService: PointService,
 ) {
 
     @PostMapping
@@ -33,8 +37,13 @@ class PickingOrderController(
 
 
     @PostMapping("/assignment")
-    fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderWithCountResponse =
-        pickingOrderService.assign(request)
+    fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderWithCountResponse {
+        val worker = workerService.find(request.workerId)
+        val assignedPickingOrder = pickingOrderService.assign(worker, request)
+        pointService.adjustBeforePicking(worker)
+
+        return assignedPickingOrder
+    }
 
 
     @PostMapping("/{pickingOrderId}/items/{pickingOrderItemId}/picking")
