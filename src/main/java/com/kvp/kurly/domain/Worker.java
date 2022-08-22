@@ -10,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Worker {
 
+    public static final int BASE_POINT = 300;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,10 +20,13 @@ public class Worker {
     @Enumerated(EnumType.STRING)
     private WorkerLevel level;
 
+    private int point;
+
     private Worker(String name) {
         isValidName(name);
         this.name = name;
         this.level = WorkerLevel.LOW;
+        this.point = 100;
     }
 
     public static Worker of(String name) {
@@ -37,6 +41,24 @@ public class Worker {
 
     public void levelUp() {
         this.level = WorkerLevel.HIGH;
+    }
+
+    public void levelDown() {
+        this.level = WorkerLevel.LOW;
+    }
+    
+    public void addPoint(int point) {
+        this.point += point;
+        if (this.point >= BASE_POINT) {
+            levelUp();
+        }
+    }
+    
+    public void subtractPoint(int point) {
+        this.point -= point;
+        if (this.point < BASE_POINT) {
+            levelDown();
+        }
     }
 
 }
