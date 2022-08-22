@@ -1,9 +1,5 @@
 #/bin/sh
 
-git submodule init
-
-git submodule update
-
 cp ./auth/application-prod.yml ./src/main/resources/
 
 ./gradlew clean appNpmBuild build
