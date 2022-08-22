@@ -25,4 +25,8 @@ public class Location {
     public Location(String code) {
         this.code = code;
     }
+
+    public boolean isSameCode(String code) {
+        return this.code.equals(code);
+    }
 }

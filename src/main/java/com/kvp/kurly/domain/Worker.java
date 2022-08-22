@@ -10,7 +10,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Worker {
 
+    public static final int INIT_POINT = 100;
     public static final int BASE_POINT = 300;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
