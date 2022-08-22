@@ -29,7 +29,7 @@ class PickingOrderController(
 
     @GetMapping("/{pickingOrderId}")
     fun getPickingOrder(@PathVariable pickingOrderId: Long): PickingOrderWithCountResponse =
-        PickingOrderWithCountResponse.from(pickingOrderService.getPickingOrder(pickingOrderId))
+        pickingOrderService.getPickingOrderResponse(pickingOrderId)
 
 
     @PostMapping("/assignment")

@@ -3,6 +3,7 @@ package com.kvp.kurly.domain
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -19,11 +20,11 @@ class Picking(
 
     val workerId: Long,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tote_id")
     val tote: Tote,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "picking_order_item_id")
     val pickingOrderItem: PickingOrderItem,
 

@@ -2,6 +2,7 @@ package com.kvp.kurly.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -17,15 +18,15 @@ class PickingOrderItem(
     @Column(name = "picking_order_item_id", nullable = false)
     val id: Long = 0L,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "picking_order_id")
     val pickingOrder: PickingOrder,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     val location: Location,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sku_id")
     val sku: Sku,
 

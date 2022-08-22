@@ -8,6 +8,8 @@ import com.kvp.kurly.domain.PickingOrderRepository
 import com.kvp.kurly.domain.SkuRepository
 import com.kvp.kurly.dto.PickingOrderAssignRequest
 import com.kvp.kurly.dto.PickingOrderCreateRequest
+import com.kvp.kurly.dto.PickingOrderItemWithCountResponse
+import com.kvp.kurly.dto.PickingOrderWithCountResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,6 +46,16 @@ class PickingOrderService(
     fun getPickingOrder(pickingOrderId: Long): PickingOrder =
         pickingOrderRepository.findByIdOrNull(pickingOrderId)
             ?: throw IllegalArgumentException("Picking Order(ID: $pickingOrderId)를 찾을 수 없습니다.")
+
+    @Transactional(readOnly = true)
+    fun getPickingOrderResponse(pickingOrderId: Long): PickingOrderWithCountResponse {
+        val pickingOrder = getPickingOrder(pickingOrderId)
+
+        return PickingOrderWithCountResponse(
+            id = pickingOrder.id,
+            items = pickingOrder.items.map { PickingOrderItemWithCountResponse.from(it) }
+        )
+    }
 
     @Transactional
     fun assign(request: PickingOrderAssignRequest): PickingOrder {
