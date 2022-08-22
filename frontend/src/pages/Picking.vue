@@ -23,7 +23,7 @@
                 solo
                 v-model="currentItem.skuName"
                 label="SKU"
-                background-color="grey lighten-4"
+                background-color="grey lighten-2"
                 readonly
                 dense
             ></v-text-field>
@@ -40,7 +40,7 @@
                 solo
                 v-model="currentItem.locationCode"
                 label="Location"
-                background-color="grey lighten-4"
+                background-color="grey lighten-2"
                 readonly
                 dense
             ></v-text-field>
@@ -57,7 +57,7 @@
                 solo
                 v-model="currentItem.totalPickingQuantity"
                 label="50"
-                background-color="grey lighten-4"
+                background-color="grey lighten-2"
                 readonly
                 dense
             ></v-text-field>
@@ -72,7 +72,7 @@
                 solo
                 v-model="currentItem.remainQuantity"
                 label="50"
-                background-color="grey lighten-4"
+                background-color="grey lighten-2"
                 readonly
                 dense
             ></v-text-field>
@@ -269,7 +269,7 @@ export default {
     },
     pickingQuantityColor() {
       if (!this.isHighWorker) {
-        return 'grey lighten-4';
+        return 'grey lighten-2';
       }
       return null;
     },

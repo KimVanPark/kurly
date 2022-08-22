@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="#92A2EA" v-if="isNotLogin">
+    <v-app-bar class="kvp-app-bar"app color="#92A2EA" v-if="isNotLogin">
       <v-row>
         <v-col>
           <span class="title">
@@ -55,6 +55,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  max-width: 500px;
+  margin:auto;
 }
 
 nav {
@@ -68,6 +70,20 @@ nav {
       color: #42b983;
     }
   }
+}
+
+.v-application--wrap {
+  min-height: 800px;
+  max-height: 1000px;
+}
+
+.v-main {
+  padding-top: 32px !important;
+}
+
+.kvp-app-bar {
+  position: static !important;
+  flex: none;
 }
 
 .title {
