@@ -47,18 +47,20 @@ public class Worker {
         this.level = WorkerLevel.LOW;
     }
     
-    public void addPoint(int point) {
+    public PointHistory addPoint(int point, PointReason reason) {
         this.point += point;
         if (this.point >= BASE_POINT) {
             levelUp();
         }
+        return new PointHistory(this.id, point, reason);
     }
     
-    public void subtractPoint(int point) {
+    public PointHistory subtractPoint(int point, PointReason reason) {
         this.point -= point;
         if (this.point < BASE_POINT) {
             levelDown();
         }
+        return new PointHistory(this.id, -point, reason);
     }
 
 }
