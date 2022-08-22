@@ -33,16 +33,21 @@ class PointService(
             return
         }
 
-        // 어제 작업한 피킹에서 이슈가 없으면, 플러스
         val yesterdayPickingHistories = pickingRepository.findHistories(
             worker = worker,
             from = yesterday.atStartOfDay(),
             to = yesterday.plusDays(1).atStartOfDay(),
         )
+        
+        if (yesterdayPickingHistories.isEmpty()) {
+            return
+        }
+
+        // 어제 작업한 피킹에서 이슈가 없으면, 플러스
         val pickingOrderItemCount = yesterdayPickingHistories.map { it.pickingOrderItem }.toSet().size
         val plusPoint = if (pickingOrderItemCount > 10) 10 else pickingOrderItemCount
 
-        worker.addPoint(plusPoint, PointReason.PERFECT)
+        workerService.addPoint(worker.getId(), plusPoint, PointReason.PERFECT)
     }
 
     private fun minusByPeriod(worker: Worker, now: LocalDateTime) {
@@ -53,7 +58,7 @@ class PointService(
             val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
             if (changedPoint > 0) {
-                worker.subtractPoint(changedPoint, PointReason.REST)
+                workerService.subtractPoint(worker.getId(), changedPoint, PointReason.REST)
             }
         }
 
@@ -67,7 +72,7 @@ class PointService(
                 val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
                 if (changedPoint > 0) {
-                    worker.subtractPoint(changedPoint, PointReason.REST)
+                    workerService.subtractPoint(worker.getId(), changedPoint, PointReason.REST)
                 }
             }
         }
