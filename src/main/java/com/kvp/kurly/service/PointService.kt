@@ -42,7 +42,7 @@ class PointService(
         val pickingOrderItemCount = yesterdayPickingHistories.map { it.pickingOrderItem }.toSet().size
         val plusPoint = if (pickingOrderItemCount > 10) 10 else pickingOrderItemCount
 
-        worker.addPoint(plusPoint, PointReason.PERFECT)
+        workerService.addPoint(worker.getId(), plusPoint, PointReason.PERFECT)
     }
 
     private fun minusByPeriod(worker: Worker, now: LocalDateTime) {
@@ -53,7 +53,7 @@ class PointService(
             val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
             if (changedPoint > 0) {
-                worker.subtractPoint(changedPoint, PointReason.REST)
+                workerService.subtractPoint(worker.getId(), changedPoint, PointReason.REST)
             }
         }
 
@@ -67,7 +67,7 @@ class PointService(
                 val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
                 if (changedPoint > 0) {
-                    worker.subtractPoint(changedPoint, PointReason.REST)
+                    workerService.subtractPoint(worker.getId(), changedPoint, PointReason.REST)
                 }
             }
         }
