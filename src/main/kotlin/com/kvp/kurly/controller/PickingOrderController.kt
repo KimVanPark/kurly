@@ -24,7 +24,6 @@ class PickingOrderController(
     private val pickingOrderService: PickingOrderService,
     private val pickingService: PickingService,
     private val workerService: WorkerService,
-    private val pointService: PointService,
 ) {
 
     @PostMapping
@@ -40,7 +39,6 @@ class PickingOrderController(
     fun assign(@RequestBody request: PickingOrderAssignRequest): PickingOrderWithCountResponse {
         val worker = workerService.find(request.workerId)
         val assignedPickingOrder = pickingOrderService.assign(worker, request)
-        pointService.adjustBeforePicking(worker)
 
         return assignedPickingOrder
     }
