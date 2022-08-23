@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface PickingRepository: JpaRepository<Picking, Long> {
+interface PickingRepository : JpaRepository<Picking, Long> {
 
     fun findFirstByWorkerOrderByPickingAtDesc(worker: Worker): Picking?
 
@@ -16,5 +16,5 @@ interface PickingRepository: JpaRepository<Picking, Long> {
     )
     fun findHistories(worker: Worker, from: LocalDateTime, to: LocalDateTime): List<Picking>
 
-    fun existsByPickingAtAfter(now: LocalDateTime): Boolean
+    fun existsByWorkerAndPickingAtAfter(worker: Worker, now: LocalDateTime): Boolean
 }

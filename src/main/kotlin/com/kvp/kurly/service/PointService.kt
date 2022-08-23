@@ -21,7 +21,7 @@ class PointService(
         val now = LocalDateTime.now()
 
         // 오늘 피킹 기록이 있으면, 포인트 조정 로직은 동작하지 않음
-        if (pickingRepository.existsByPickingAtAfter(now.toLocalDate().atStartOfDay())) {
+        if (pickingRepository.existsByWorkerAndPickingAtAfter(worker, now.toLocalDate().atStartOfDay())) {
             return listOf()
         }
 
@@ -56,13 +56,10 @@ class PointService(
     }
 
     private fun minusByPeriod(worker: Worker, now: LocalDateTime): PointResponse? {
-        println("start minusByPeriod===================")
         val lastPickingHistory = pickingRepository.findFirstByWorkerOrderByPickingAtDesc(worker) ?: return null
-        println("pickingHistory=================== ${lastPickingHistory?.pickingAt}")
 
         // 한달이 지난 작업자
         if (lastPickingHistory.pickingAt.plusMonths(1).isBefore(now)) {
-            println("one month=================== ${lastPickingHistory?.pickingAt}")
             val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
             if (changedPoint > 0) {
@@ -72,7 +69,6 @@ class PointService(
         }
         // 2주일이 지난 작업자
         else if (lastPickingHistory.pickingAt.plusDays(14).isBefore(now)) {
-            println("two weeks=================== ${lastPickingHistory?.pickingAt}")
                 val tempPoint = worker.getPoint() - 50
 
                 if (tempPoint >= Worker.INIT_POINT) {
