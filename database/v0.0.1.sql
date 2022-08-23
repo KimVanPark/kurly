@@ -53,3 +53,41 @@ create index uix_location_code
 create index uix_worker_name
     on worker (name);
 
+create table tote
+(
+    tote_id bigint not null AUTO_INCREMENT,
+    code    varchar(255),
+    primary key (tote_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+create table picking_order_item
+(
+    picking_order_item_id bigint  not null AUTO_INCREMENT,
+    count                 integer not null,
+    location_id           bigint,
+    picking_order_id      bigint,
+    sku_id                bigint,
+    primary key (picking_order_item_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+create table picking_order
+(
+    picking_order_id bigint not null AUTO_INCREMENT,
+    worker_id        bigint,
+    primary key (picking_order_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+create table picking
+(
+    picking_id            bigint  not null AUTO_INCREMENT,
+    count                 integer not null,
+    picking_at            timestamp,
+    picking_order_item_id bigint,
+    tote_id               bigint,
+    worker_id             bigint,
+    primary key (picking_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

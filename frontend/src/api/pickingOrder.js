@@ -13,12 +13,24 @@ const fetchPickingOrder = async (params) => {
   }
 }
 
-const postPicking = async (formData) => {
-  console.log(formData)
+const assignmentPickingOrder = async (formData) => {
   try {
     const {data} = await api.request({
       method: "post",
-      url: "/picking-orders/picking",
+      url: "/v1/picking-orders/assignment",
+      data: formData
+    })
+    return data;
+  } catch (e) {
+    throw Error(e)
+  }
+}
+
+const postPicking = async (pickingOrderId, pickingOrderItemId, formData) => {
+  try {
+    const {data} = await api.request({
+      method: "post",
+      url: `/v1/picking-orders/${pickingOrderId}/items/${pickingOrderItemId}/picking`,
       data: formData
     })
     return data;
@@ -29,5 +41,6 @@ const postPicking = async (formData) => {
 
 export default {
   fetchPickingOrder,
+  assignmentPickingOrder,
   postPicking
 }

@@ -14,8 +14,5 @@ const fetchWorker = async (params) => {
 }
 
 export default {
-  fetchHigh,
-  fetchLow,
-  fetchNone,
   fetchWorker
 }

@@ -21,8 +21,7 @@
           <v-col class="pb-0 one-line-input">
             <v-text-field
                 solo
-                v-model="currentItem.skuName"
-                label="SKU"
+                v-model="currentItem.sku.code"
                 background-color="grey lighten-2"
                 readonly
                 dense
@@ -38,8 +37,7 @@
           <v-col class="pb-0 one-line-input">
             <v-text-field
                 solo
-                v-model="currentItem.locationCode"
-                label="Location"
+                v-model="currentItem.location.code"
                 background-color="grey lighten-2"
                 readonly
                 dense
@@ -55,8 +53,7 @@
           <v-col class="pb-0 multi-line-input">
             <v-text-field
                 solo
-                v-model="currentItem.totalPickingQuantity"
-                label="50"
+                v-model="currentItem.totalCount"
                 background-color="grey lighten-2"
                 readonly
                 dense
@@ -70,8 +67,7 @@
           <v-col class="pb-0 multi-line-input">
             <v-text-field
                 solo
-                v-model="currentItem.remainQuantity"
-                label="50"
+                v-model="remainQuantity"
                 background-color="grey lighten-2"
                 readonly
                 dense
@@ -204,14 +200,14 @@
                 text
                 @click="confirmDialog = false"
             >
-              Disagree
+              취소
             </v-btn>
             <v-btn
                 color="#92A2EA"
                 text
                 @click="doCloseConfirm"
             >
-              Agree
+              피킹
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -247,12 +243,11 @@ export default {
         items: []
       },
       currentItem: {
-        itemId: '',
-        skuName: '',
-        locationCode: '',
-        barcode: '',
-        totalPickingQuantity: 0,
-        remainQuantity: 0
+        id: '',
+        location: {},
+        sku: {},
+        totalCount: 0,
+        pickingCount: 0
       },
       snackbar: {
         enable: false,
@@ -281,16 +276,19 @@ export default {
         return this.totalItemCount
       }
       return (this.totalItemCount -
-          this.pickingOrder.items.filter(item => item.remainQuantity !== 0).length) + 1
+          this.pickingOrder.items.filter(item => item.totalCount > item.pickingCount).length) + 1
+    },
+    remainQuantity() {
+      return this.currentItem.totalCount - this.currentItem.pickingCount
     },
     pickingComplete() {
-      return this.pickingOrder.items.filter(item => item.remainQuantity !== 0).length === 0
+      return this.pickingOrder.items.filter(item => item.totalCount > item.pickingCount).length === 0
     },
     isInValidLocation() {
-      return this.postData.location !== this.currentItem.locationCode
+      return this.postData.location !== this.currentItem.location.code
     },
     isInValidBarcode() {
-      return this.postData.barcode !== this.currentItem.barcode
+      return this.postData.barcode !== this.currentItem.sku.barcode
     }
   },
   methods: {
@@ -306,7 +304,10 @@ export default {
     selectTote() {
       this.$refs.toteInput.$el.getElementsByTagName('input')[0].select()
     },
-    onEnterLocation() {
+    onEnterLocation(event) {
+      if (event.isComposing) {
+        return;
+      }
       if (this.isInValidLocation) {
         this.snackbar.text = '피킹 위치를 다시 한번 확인해주세요.'
         this.snackbar.enable = true
@@ -315,7 +316,10 @@ export default {
       }
       this.$refs.barcodeInput.focus()
     },
-    onEnterBarcode() {
+    onEnterBarcode(event) {
+      if (event.isComposing) {
+        return;
+      }
       if (this.isInValidBarcode) {
         this.snackbar.text = '바코드가 올바른지 확인해주세요.'
         this.snackbar.enable = true
@@ -325,7 +329,7 @@ export default {
       if (!this.postData.pickingQuantity) {
         this.postData.pickingQuantity = 0
       }
-      if (this.postData.pickingQuantity >= this.currentItem.remainQuantity) {
+      if (this.postData.pickingQuantity >= this.remainQuantity) {
         this.snackbar.text = '더 이상 피킹이 불가합니다.'
         this.snackbar.enable = true
         this.selectBarcode()
@@ -381,14 +385,15 @@ export default {
     async postPicking() {
       const data = {
         workerId: this.getWorker.id,
-        pickingItemId: this.currentItem.itemId,
-        pickingQuantity: this.postData.pickingQuantity,
-        tote: this.postData.tote
+        locationCode: this.postData.location,
+        skuBarcode: this.postData.barcode,
+        count: this.postData.pickingQuantity,
+        toteCode: this.postData.tote
       }
       try {
-        const item = await pickingOrder.postPicking(data)
+        const item = await pickingOrder.postPicking(this.pickingOrder.id, this.currentItem.id, data)
         const itemIndex =
-            this.pickingOrder.items.findIndex(pickingItem => pickingItem.itemId === item.itemId)
+            this.pickingOrder.items.findIndex(pickingItem => pickingItem.id === item.id)
         this.pickingOrder.items[itemIndex] = item
         this.pickingOrder = JSON.parse(JSON.stringify(this.pickingOrder));
         this.currentItem = item
@@ -398,7 +403,7 @@ export default {
       }
     },
     selectItem() {
-      if (this.currentItem.remainQuantity > 0) {
+      if (this.currentItem.totalCount > this.currentItem.pickingCount) {
         this.resetSameItem()
         return;
       }
@@ -406,7 +411,7 @@ export default {
         this.dialog = true
         return;
       }
-      this.currentItem = this.pickingOrder.items.find(item => item.remainQuantity > 0)
+      this.currentItem = this.pickingOrder.items.find(item => item.totalCount > item.pickingCount)
       this.resetNewItem()
     },
     resetSameItem() {
@@ -434,13 +439,13 @@ export default {
       this.$router.push("/")
     },
     async fetchPickingOrder() {
-      const params = {
+      const formData = {
         workerId: this.getWorker.id
       }
       try {
-        const data = await pickingOrder.fetchPickingOrder(params)
+        const data = await pickingOrder.assignmentPickingOrder(formData)
         this.pickingOrder = data
-        this.currentItem = data.items.find(item => item.remainQuantity > 0)
+        this.currentItem = data.items.find(item => item.totalCount > item.pickingCount)
         if (!this.currentItem) {
           await this.$router.push("/")
         }

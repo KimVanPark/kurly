@@ -73,7 +73,7 @@ nav {
 }
 
 .v-application--wrap {
-  min-height: 800px;
+  min-height: 750px;
   max-height: 1000px;
 }
 
