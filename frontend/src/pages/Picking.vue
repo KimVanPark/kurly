@@ -21,7 +21,7 @@
           <v-col class="pb-0 one-line-input">
             <v-text-field
                 solo
-                v-model="currentItem.sku.code"
+                v-model="currentItem.sku.name"
                 background-color="grey lighten-2"
                 readonly
                 dense
