@@ -56,10 +56,13 @@ class PointService(
     }
 
     private fun minusByPeriod(worker: Worker, now: LocalDateTime): PointResponse? {
+        println("start minusByPeriod===================")
         val lastPickingHistory = pickingRepository.findFirstByWorkerOrderByPickingAtDesc(worker) ?: return null
+        println("pickingHistory=================== ${lastPickingHistory?.pickingAt}")
 
         // 한달이 지난 작업자
         if (lastPickingHistory.pickingAt.plusMonths(1).isBefore(now)) {
+            println("one month=================== ${lastPickingHistory?.pickingAt}")
             val changedPoint = worker.getPoint() - Worker.INIT_POINT
 
             if (changedPoint > 0) {
@@ -69,6 +72,7 @@ class PointService(
         }
         // 2주일이 지난 작업자
         else if (lastPickingHistory.pickingAt.plusDays(14).isBefore(now)) {
+            println("two weeks=================== ${lastPickingHistory?.pickingAt}")
                 val tempPoint = worker.getPoint() - 50
 
                 if (tempPoint >= Worker.INIT_POINT) {
