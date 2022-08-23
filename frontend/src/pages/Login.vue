@@ -133,6 +133,10 @@ export default {
   },
   mounted() {
     this.$refs.workerInput.focus();
+
+    if (this.isLoggedIn) {
+      this.worker = this.getWorker.name
+    }
   }
 }
 </script>
