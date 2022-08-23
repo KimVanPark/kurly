@@ -116,8 +116,11 @@ export default {
           point: data.point
         })
         const totalChangedPoint = data.points.reduce((a, b) => a + b.point, 0);
-        this.pointAlert.text = `${totalChangedPoint}만큼 숙련포인트가 변경되었습니다.`
-        this.pointAlert.snackbar = true
+        if (totalChangedPoint > 0) {
+
+          this.pointAlert.text = `${totalChangedPoint}만큼 숙련포인트가 변경되었습니다.`
+          this.pointAlert.snackbar = true
+        }
       } catch (e) {
         this.loginError.text = '로그인에 실패하였습니다. 작업자를 확인해주세요.'
         this.loginError.snackbar = true
