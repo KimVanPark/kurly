@@ -1,0 +1,45 @@
+### PickingOrder 생성
+POST http://localhost:8080/api/v1/picking-orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "locationCode": "A01-01-101",
+      "skuCode": "사과001",
+      "count": 10
+    }
+  ]
+}
+
+### PickingOrder 조회
+GET http://localhost:8080/api/v1/picking-orders/1
+
+
+### PickingOrder 작업자 할당
+POST http://localhost:8080/api/v1/picking-orders/assignment
+Content-Type: application/json
+
+{
+  "workerId": 1
+}
+
+### TOTE 생성
+POST http://localhost:8080/api/v1/totes
+Content-Type: application/json
+
+{
+  "code": "바구니"
+}
+
+### Picking
+POST http://localhost:8080/api/v1/picking-orders/1/items/1/picking
+Content-Type: application/json
+
+{
+  "workerId": 1,
+  "locationCode": "A01-01-101",
+  "skuBarcode":  "사과바코드",
+  "toteCode": "바구니",
+  "count":  10
+}
